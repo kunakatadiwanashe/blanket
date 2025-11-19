@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Design system variables */
+@layer base {
+  :root {
+    --background: 32 50% 97%;
+    --foreground: 25 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 25 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 30% 15%;
+
+    --primary: 11 100% 64%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 175 45% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 32 30% 90%;
+    --muted-foreground: 25 15% 45%;
+
+    --accent: 28 80% 92%;
+    --accent-foreground: 25 30% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 32 20% 88%;
+    --input: 32 20% 88%;
+    --ring: 11 100% 64%;
+    --radius: 0.75rem;
+  }
+
+  /* Dark mode overrides */
+  .dark {
+    --background: 25 25% 12%;
+    --foreground: 32 50% 95%;
+    --card: 25 20% 15%;
+    --card-foreground: 32 50% 95%;
+    --border: 25 15% 25%;
+    --input: 25 15% 25%;
+  }
+}
+
+/* Apply Tailwind utility classes using CSS variables */
+@layer base {
+  body {
+    background-color: #fff6df;
+    color: hsl(var(--foreground));
+  }
+
+  /* Global border color */
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  /* Example input using design system */
+  input, textarea, select {
+    background-color: hsl(var(--input));
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    padding: 0.5rem 0.75rem;
+  }
+}
