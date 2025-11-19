@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IVendor extends Document {
   name: string;
   email: string;
+  products: string;
   eventId: mongoose.Types.ObjectId;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: Date;
@@ -11,7 +12,9 @@ export interface IVendor extends Document {
 
 const VendorSchema: Schema = new Schema({
   name: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
   email: { type: String, required: true },
+  products: { type: String, required: true },
   eventId: { type: Schema.Types.ObjectId, ref: 'Event', required: true },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 }, {

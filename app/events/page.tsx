@@ -1,15 +1,13 @@
 'use client';
 
 import Navigation from "@/components/Navigation";
-import { Card, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, MapPin, Clock, Music, ShoppingBag, UserPlus } from "lucide-react";
-import blanketsImage from "@/assets/blankets.jpg";
 import marketImage from "@/assets/market-day.jpg";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
@@ -31,8 +29,9 @@ const Events = () => {
   const [vendorForm, setVendorForm] = useState({
     name: '',
     email: '',
-    eventId: ''
-    description: ''
+    products: '',
+    eventId: '',
+    phoneNumber: ''
   });
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +69,7 @@ const Events = () => {
 
       if (response.ok) {
         alert('Vendor registration submitted successfully! You will be notified once approved.');
-        setVendorForm({ name: '', email: '', eventId: '' });
+        setVendorForm({ name: '', email: '', products: '', eventId: '', phoneNumber: '' });
         setIsVendorDialogOpen(false);
       } else {
         alert('Failed to register. Please try again.');
@@ -90,7 +89,7 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <main className="pt-32 pb-20">
         <div className="container mx-auto px-4">
 
@@ -125,7 +124,7 @@ const Events = () => {
               events.map((event) => {
                 const IconComponent = getIcon(event.type);
                 return (
-                  <Card key={event._id} className="border-none shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 overflow-hidden">
+                  <Card key={event._id} className="bg-amber-50 border-none shadow-(--shadow-soft) hover:shadow-(--shadow-glow) transition-all duration-300 overflow-hidden">
                     <div className="grid md:grid-cols-2 gap-0">
                       <div
                         className="h-64 md:h-auto bg-cover bg-center"
@@ -158,17 +157,38 @@ const Events = () => {
                           </div>
                         </div>
 
-                        <Dialog open={isVendorDialogOpen} onOpenChange={setIsVendorDialogOpen}>
-                          <DialogTrigger asChild>
-                            <Button
-                              className="w-full"
-                              onClick={() => setVendorForm({ ...vendorForm, eventId: event._id })}
-                            >
-                              <UserPlus className="w-4 h-4 mr-2" />
-                              Register as Vendor
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
+
+                        <Dialog open={isVendorDialogOpen} onOpenChange={setIsVendorDialogOpen} >
+
+
+
+                          <div className="flex justify-between">
+                            <DialogTrigger asChild>
+                              <Button
+                                className="w-60 bg-amber-400 hover:bg-amber-300"
+                                onClick={() => setVendorForm({ ...vendorForm, eventId: event._id, products: '' })}
+                              >
+                                <UserPlus className="w-4 h-4 mr-2" />
+                                Register as Vendor
+                              </Button>
+
+                            </DialogTrigger>
+
+
+                            <DialogTrigger asChild>
+                              <Button
+                                className="w-60 bg-amber-400 hover:bg-amber-300"
+                                onClick={() => setVendorForm({ ...vendorForm, eventId: event._id, products: '' })}
+                              >
+                                <UserPlus className="w-4 h-4 mr-2" />
+                                Apply to Perform
+                              </Button>
+                            </DialogTrigger>
+                          </div>
+
+
+
+                          <DialogContent className="bg-white">
                             <DialogHeader>
                               <DialogTitle>Register as Vendor for {event.title}</DialogTitle>
                             </DialogHeader>
@@ -184,6 +204,16 @@ const Events = () => {
                               </div>
 
                               <div>
+                                <Label htmlFor="phoneNumber">Phone Number</Label>
+                                <Input
+                                  id="phoneNumber"
+                                  value={vendorForm.phoneNumber}
+                                  onChange={(e) => setVendorForm({ ...vendorForm, phoneNumber: e.target.value })}
+                                  required
+                                />
+                              </div>
+
+                              <div>
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                   id="email"
@@ -194,41 +224,23 @@ const Events = () => {
                                 />
                               </div>
 
-
-                                                              <Label htmlFor="name">Full Name</Label>
-                                <Input
-                                  id="Des"
-                                  value={vendorForm.description}
-                                  onChange={(e) => setVendorForm({ ...vendorForm, description: e.target.value })}
+                              <div>
+                                <Label htmlFor="products">What will you be selling?</Label>
+                                <Textarea
+                                  id="products"
+                                  value={vendorForm.products}
+                                  onChange={(e) => setVendorForm({ ...vendorForm, products: e.target.value })}
                                   required
                                 />
                               </div>
-                              
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                              <Button type="submit" disabled={submitting} className="w-full">
+                              <Button type="submit" disabled={submitting} className="w-1/2 bg-amber-400 hover:bg-amber-300">
                                 {submitting ? 'Submitting...' : 'Submit Registration'}
                               </Button>
                             </form>
                           </DialogContent>
                         </Dialog>
+
                       </CardContent>
                     </div>
                   </Card>
@@ -237,43 +249,39 @@ const Events = () => {
             )}
           </div>
 
-<section className="flex bg-amber-50 p-14 gap-6">
+          <section className="flex bg-amber-50 p-14 gap-6">
             {/* Artist Info Section */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="border-none bg-linear-to-r from-primary/5 via-accent/50 to-secondary/5">
-              <CardContent className="pt-8 pb-8">
-                <Music className="w-12 h-12 text-primary mb-4" />
-                <h2 className="text-3xl font-bold mb-4">Are You an Artist?</h2>
-                <p className="text-muted-foreground mb-6 leading-relaxed max-w-2xl mx-auto">
-                  We&apos;re always looking for talented musicians and performers to join our lineup.
-                  Help us create unforgettable experiences while supporting a great cause.
-                </p>
-                <Button>
-                  Apply to Perform
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+            <div className="max-w-4xl mx-auto">
+              <Card className="border-none bg-linear-to-r from-primary/5 via-accent/50 to-secondary/5">
+                <CardContent className="pt-8 pb-8">
+                  <Music className="w-12 h-12 text-primary mb-4" />
+                  <h2 className="text-3xl font-bold mb-4">Are You an Artist?</h2>
+                  <p className="text-muted-foreground mb-6 leading-relaxed max-w-2xl mx-auto">
+                    We&apos;re always looking for talented musicians and performers to join our lineup.
+                    Help us create unforgettable experiences while supporting a great cause.
+                  </p>
 
-          {/* Vendor Info Section */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="border-none ">
-              <CardContent className="pt-8 pb-8">
-                <ShoppingBag className="w-12 h-12 text-secondary mb-4" />
-                <h2 className="text-3xl font-bold mb-4">Become a Vendor</h2>
-                <p className="text-muted-foreground mb-6 leading-relaxed max-w-2xl mx-auto">
-                  Showcase your products or crafts at our market days. Connect with the community
-                  and contribute to our charitable mission. Register for specific events above.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Click "Register as Vendor" on any event card to apply.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Vendor Info Section */}
+            <div className="max-w-4xl mx-auto">
+              <Card className="border-none ">
+                <CardContent className="pt-8 pb-8">
+                  <ShoppingBag className="w-12 h-12 text-secondary mb-4" />
+                  <h2 className="text-3xl font-bold mb-4">Become a Vendor</h2>
+                  <p className="text-muted-foreground mb-6 leading-relaxed max-w-2xl mx-auto">
+                    Showcase your products or crafts at our market days. Connect with the community
+                    and contribute to our charitable mission. Register for specific events above.
+                  </p>
+
+                </CardContent>
+              </Card>
+            </div>
 
 
-</section>
+          </section>
 
 
 
