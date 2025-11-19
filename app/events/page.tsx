@@ -1,7 +1,7 @@
 'use client';
 
 import Navigation from "@/components/Navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ const Events = () => {
     name: '',
     email: '',
     eventId: ''
+    description: ''
   });
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -181,6 +182,7 @@ const Events = () => {
                                   required
                                 />
                               </div>
+
                               <div>
                                 <Label htmlFor="email">Email</Label>
                                 <Input
@@ -191,6 +193,36 @@ const Events = () => {
                                   required
                                 />
                               </div>
+
+
+                                                              <Label htmlFor="name">Full Name</Label>
+                                <Input
+                                  id="Des"
+                                  value={vendorForm.description}
+                                  onChange={(e) => setVendorForm({ ...vendorForm, description: e.target.value })}
+                                  required
+                                />
+                              </div>
+                              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                               <Button type="submit" disabled={submitting} className="w-full">
                                 {submitting ? 'Submitting...' : 'Submit Registration'}
                               </Button>
