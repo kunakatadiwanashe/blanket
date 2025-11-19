@@ -9,6 +9,20 @@ export interface IEvent extends Document {
   image: string;
   type: string;
   approvedVendors: mongoose.Types.ObjectId[];
+  tickets: {
+    earlyBird: {
+      available: number;
+      price: number;
+    };
+    ordinary: {
+      available: number;
+      price: number;
+    };
+    vip: {
+      available: number;
+      price: number;
+    };
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +36,20 @@ const EventSchema: Schema = new Schema({
   image: { type: String, required: true },
   type: { type: String, required: true },
   approvedVendors: [{ type: Schema.Types.ObjectId, ref: 'Vendor' }],
+  tickets: {
+    earlyBird: {
+      available: { type: Number, required: true, default: 0 },
+      price: { type: Number, required: true, default: 0 },
+    },
+    ordinary: {
+      available: { type: Number, required: true, default: 0 },
+      price: { type: Number, required: true, default: 0 },
+    },
+    vip: {
+      available: { type: Number, required: true, default: 0 },
+      price: { type: Number, required: true, default: 0 },
+    },
+  },
 }, {
   timestamps: true,
 });

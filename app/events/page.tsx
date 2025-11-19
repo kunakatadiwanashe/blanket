@@ -3,11 +3,11 @@
 import Navigation from "@/components/Navigation";
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, MapPin, Clock, Music, ShoppingBag, UserPlus } from "lucide-react";
+import { Calendar, MapPin, Clock, Music, ShoppingBag, UserPlus, Ticket } from "lucide-react";
 import marketImage from "@/assets/market-day.jpg";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
@@ -21,6 +21,20 @@ interface Event {
   description: string;
   image: string;
   type: string;
+  tickets: {
+    earlyBird: {
+      available: number;
+      price: number;
+    };
+    ordinary: {
+      available: number;
+      price: number;
+    };
+    vip: {
+      available: number;
+      price: number;
+    };
+  };
 }
 
 const Events = () => {
@@ -35,6 +49,12 @@ const Events = () => {
   });
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [ticketForm, setTicketForm] = useState({
+    ticketType: 'ordinary',
+    quantity: 1,
+  });
 
   useEffect(() => {
     fetchEvents();
@@ -76,6 +96,48 @@ const Events = () => {
       }
     } catch (error) {
       console.error('Error registering vendor:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleTicketPurchase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEvent) return;
+
+    setSubmitting(true);
+
+    try {
+      // For demo purposes, using a valid ObjectId. In real app, get from auth
+      const userId = '507f1f77bcf86cd799439011';
+
+      const response = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: selectedEvent._id,
+          userId,
+          ticketType: ticketForm.ticketType,
+          quantity: ticketForm.quantity,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Ticket purchased successfully!');
+        setIsTicketDialogOpen(false);
+        setTicketForm({ ticketType: 'ordinary', quantity: 1 });
+        setSelectedEvent(null);
+        // Refresh events to show updated availability
+        fetchEvents();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to purchase ticket.');
+      }
+    } catch (error) {
+      console.error('Error purchasing ticket:', error);
       alert('An error occurred. Please try again.');
     } finally {
       setSubmitting(false);
@@ -158,36 +220,33 @@ const Events = () => {
                         </div>
 
 
-                        <Dialog open={isVendorDialogOpen} onOpenChange={setIsVendorDialogOpen} >
+                        <div className="flex justify-between gap-4">
+                          <Button
+                            className="flex-1 bg-green-500 hover:bg-green-400"
+                            onClick={() => { setSelectedEvent(event); setIsTicketDialogOpen(true); }}
+                          >
+                            <Ticket className="w-4 h-4 mr-2" />
+                            Buy Ticket
+                          </Button>
 
+                          <Button
+                            className="flex-1 bg-amber-400 hover:bg-amber-300"
+                            onClick={() => { setVendorForm({ ...vendorForm, eventId: event._id, products: '' }); setIsVendorDialogOpen(true); }}
+                          >
+                            <UserPlus className="w-4 h-4 mr-2" />
+                            Register as Vendor
+                          </Button>
 
+                          <Button
+                            className="flex-1 bg-amber-400 hover:bg-amber-300"
+                            onClick={() => { setVendorForm({ ...vendorForm, eventId: event._id, products: '' }); setIsVendorDialogOpen(true); }}
+                          >
+                            <UserPlus className="w-4 h-4 mr-2" />
+                            Apply to Perform
+                          </Button>
+                        </div>
 
-                          <div className="flex justify-between">
-                            <DialogTrigger asChild>
-                              <Button
-                                className="w-60 bg-amber-400 hover:bg-amber-300"
-                                onClick={() => setVendorForm({ ...vendorForm, eventId: event._id, products: '' })}
-                              >
-                                <UserPlus className="w-4 h-4 mr-2" />
-                                Register as Vendor
-                              </Button>
-
-                            </DialogTrigger>
-
-
-                            <DialogTrigger asChild>
-                              <Button
-                                className="w-60 bg-amber-400 hover:bg-amber-300"
-                                onClick={() => setVendorForm({ ...vendorForm, eventId: event._id, products: '' })}
-                              >
-                                <UserPlus className="w-4 h-4 mr-2" />
-                                Apply to Perform
-                              </Button>
-                            </DialogTrigger>
-                          </div>
-
-
-
+                        <Dialog open={isVendorDialogOpen} onOpenChange={setIsVendorDialogOpen}>
                           <DialogContent className="bg-white">
                             <DialogHeader>
                               <DialogTitle>Register as Vendor for {event.title}</DialogTitle>
@@ -241,6 +300,50 @@ const Events = () => {
                           </DialogContent>
                         </Dialog>
 
+                        <Dialog open={isTicketDialogOpen} onOpenChange={setIsTicketDialogOpen}>
+                          <DialogContent className="bg-white">
+                            <DialogHeader>
+                              <DialogTitle>Buy Tickets for {selectedEvent?.title}</DialogTitle>
+                            </DialogHeader>
+                            <form onSubmit={handleTicketPurchase} className="space-y-4">
+                              <div>
+                                <Label htmlFor="ticketType">Ticket Type</Label>
+                                <select
+                                  id="ticketType"
+                                  value={ticketForm.ticketType}
+                                  onChange={(e) => setTicketForm({ ...ticketForm, ticketType: e.target.value })}
+                                  className="w-full p-2 border rounded"
+                                  required
+                                >
+                                  <option value="earlyBird">Early Bird - ${selectedEvent?.tickets?.earlyBird?.price || 0} ({selectedEvent?.tickets?.earlyBird?.available || 0} available)</option>
+                                  <option value="ordinary">Ordinary - ${selectedEvent?.tickets?.ordinary?.price || 0} ({selectedEvent?.tickets?.ordinary?.available || 0} available)</option>
+                                  <option value="vip">VIP - ${selectedEvent?.tickets?.vip?.price || 0} ({selectedEvent?.tickets?.vip?.available || 0} available)</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <Label htmlFor="quantity">Quantity</Label>
+                                <Input
+                                  id="quantity"
+                                  type="number"
+                                  min="1"
+                                  max={selectedEvent?.tickets?.[ticketForm.ticketType as keyof typeof selectedEvent.tickets]?.available || 1}
+                                  value={ticketForm.quantity}
+                                  onChange={(e) => setTicketForm({ ...ticketForm, quantity: parseInt(e.target.value) || 1 })}
+                                  required
+                                />
+                              </div>
+
+                              <div className="text-sm text-muted-foreground">
+                                Total: ${(selectedEvent?.tickets?.[ticketForm.ticketType as keyof typeof selectedEvent.tickets]?.price || 0) * ticketForm.quantity}
+                              </div>
+
+                              <Button type="submit" disabled={submitting} className="w-full bg-green-500 hover:bg-green-400">
+                                {submitting ? 'Processing...' : 'Purchase Ticket'}
+                              </Button>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
                       </CardContent>
                     </div>
                   </Card>

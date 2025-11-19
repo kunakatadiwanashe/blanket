@@ -21,6 +21,20 @@ interface Event {
   description: string;
   image: string;
   type: string;
+  tickets: {
+    earlyBird: {
+      available: number;
+      price: number;
+    };
+    ordinary: {
+      available: number;
+      price: number;
+    };
+    vip: {
+      available: number;
+      price: number;
+    };
+  };
 }
 
 interface Vendor {
@@ -49,6 +63,11 @@ const Admin = () => {
     description: '',
     image: '',
     type: '',
+    tickets: {
+      earlyBird: { available: 0, price: 0 },
+      ordinary: { available: 0, price: 0 },
+      vip: { available: 0, price: 0 }
+    },
     adminPassword: 'admin123'
   });
 
@@ -61,6 +80,11 @@ const Admin = () => {
     description: '',
     image: '',
     type: '',
+    tickets: {
+      earlyBird: { available: 0, price: 0 },
+      ordinary: { available: 0, price: 0 },
+      vip: { available: 0, price: 0 }
+    },
     adminPassword: 'admin123'
   });
 
@@ -188,6 +212,11 @@ const Admin = () => {
           description: '',
           image: '',
           type: '',
+          tickets: {
+            earlyBird: { available: 0, price: 0 },
+            ordinary: { available: 0, price: 0 },
+            vip: { available: 0, price: 0 }
+          },
           adminPassword: 'admin123'
         });
         fetchEvents();
@@ -234,6 +263,7 @@ const Admin = () => {
       description: event.description,
       image: event.image,
       type: event.type,
+      tickets: event.tickets,
       adminPassword: 'admin123'
     });
   };
@@ -413,6 +443,137 @@ const Admin = () => {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Ticket Types */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Ticket Types</h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="border rounded-lg p-4">
+                        <Label className="font-semibold">Early Bird</Label>
+                        <div className="space-y-2 mt-2">
+                          <div>
+                            <Label htmlFor="earlyBird-available" className="text-sm">Available</Label>
+                            <Input
+                              id="earlyBird-available"
+                              type="number"
+                              min="0"
+                              value={eventForm.tickets.earlyBird.available}
+                              onChange={(e) => setEventForm({
+                                ...eventForm,
+                                tickets: {
+                                  ...eventForm.tickets,
+                                  earlyBird: { ...eventForm.tickets.earlyBird, available: parseInt(e.target.value) || 0 }
+                                }
+                              })}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="earlyBird-price" className="text-sm">Price ($)</Label>
+                            <Input
+                              id="earlyBird-price"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={eventForm.tickets.earlyBird.price}
+                              onChange={(e) => setEventForm({
+                                ...eventForm,
+                                tickets: {
+                                  ...eventForm.tickets,
+                                  earlyBird: { ...eventForm.tickets.earlyBird, price: parseFloat(e.target.value) || 0 }
+                                }
+                              })}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border rounded-lg p-4">
+                        <Label className="font-semibold">Ordinary</Label>
+                        <div className="space-y-2 mt-2">
+                          <div>
+                            <Label htmlFor="ordinary-available" className="text-sm">Available</Label>
+                            <Input
+                              id="ordinary-available"
+                              type="number"
+                              min="0"
+                              value={eventForm.tickets.ordinary.available}
+                              onChange={(e) => setEventForm({
+                                ...eventForm,
+                                tickets: {
+                                  ...eventForm.tickets,
+                                  ordinary: { ...eventForm.tickets.ordinary, available: parseInt(e.target.value) || 0 }
+                                }
+                              })}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="ordinary-price" className="text-sm">Price ($)</Label>
+                            <Input
+                              id="ordinary-price"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={eventForm.tickets.ordinary.price}
+                              onChange={(e) => setEventForm({
+                                ...eventForm,
+                                tickets: {
+                                  ...eventForm.tickets,
+                                  ordinary: { ...eventForm.tickets.ordinary, price: parseFloat(e.target.value) || 0 }
+                                }
+                              })}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border rounded-lg p-4">
+                        <Label className="font-semibold">VIP</Label>
+                        <div className="space-y-2 mt-2">
+                          <div>
+                            <Label htmlFor="vip-available" className="text-sm">Available</Label>
+                            <Input
+                              id="vip-available"
+                              type="number"
+                              min="0"
+                              value={eventForm.tickets.vip.available}
+                              onChange={(e) => setEventForm({
+                                ...eventForm,
+                                tickets: {
+                                  ...eventForm.tickets,
+                                  vip: { ...eventForm.tickets.vip, available: parseInt(e.target.value) || 0 }
+                                }
+                              })}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="vip-price" className="text-sm">Price ($)</Label>
+                            <Input
+                              id="vip-price"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={eventForm.tickets.vip.price}
+                              onChange={(e) => setEventForm({
+                                ...eventForm,
+                                tickets: {
+                                  ...eventForm.tickets,
+                                  vip: { ...eventForm.tickets.vip, price: parseFloat(e.target.value) || 0 }
+                                }
+                              })}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <Button type="submit" disabled={loading} className="w-full">
                     {loading ? 'Creating...' : 'Create Event'}
                   </Button>
@@ -560,6 +721,137 @@ const Admin = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
+
+                              {/* Ticket Types */}
+                              <div className="space-y-4">
+                                <h3 className="text-lg font-semibold">Ticket Types</h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div className="border rounded-lg p-4">
+                                    <Label className="font-semibold">Early Bird</Label>
+                                    <div className="space-y-2 mt-2">
+                                      <div>
+                                        <Label htmlFor="edit-earlyBird-available" className="text-sm">Available</Label>
+                                        <Input
+                                          id="edit-earlyBird-available"
+                                          type="number"
+                                          min="0"
+                                          value={editForm.tickets.earlyBird.available}
+                                          onChange={(e) => setEditForm({
+                                            ...editForm,
+                                            tickets: {
+                                              ...editForm.tickets,
+                                              earlyBird: { ...editForm.tickets.earlyBird, available: parseInt(e.target.value) || 0 }
+                                            }
+                                          })}
+                                          required
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label htmlFor="edit-earlyBird-price" className="text-sm">Price ($)</Label>
+                                        <Input
+                                          id="edit-earlyBird-price"
+                                          type="number"
+                                          min="0"
+                                          step="0.01"
+                                          value={editForm.tickets.earlyBird.price}
+                                          onChange={(e) => setEditForm({
+                                            ...editForm,
+                                            tickets: {
+                                              ...editForm.tickets,
+                                              earlyBird: { ...editForm.tickets.earlyBird, price: parseFloat(e.target.value) || 0 }
+                                            }
+                                          })}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="border rounded-lg p-4">
+                                    <Label className="font-semibold">Ordinary</Label>
+                                    <div className="space-y-2 mt-2">
+                                      <div>
+                                        <Label htmlFor="edit-ordinary-available" className="text-sm">Available</Label>
+                                        <Input
+                                          id="edit-ordinary-available"
+                                          type="number"
+                                          min="0"
+                                          value={editForm.tickets.ordinary.available}
+                                          onChange={(e) => setEditForm({
+                                            ...editForm,
+                                            tickets: {
+                                              ...editForm.tickets,
+                                              ordinary: { ...editForm.tickets.ordinary, available: parseInt(e.target.value) || 0 }
+                                            }
+                                          })}
+                                          required
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label htmlFor="edit-ordinary-price" className="text-sm">Price ($)</Label>
+                                        <Input
+                                          id="edit-ordinary-price"
+                                          type="number"
+                                          min="0"
+                                          step="0.01"
+                                          value={editForm.tickets.ordinary.price}
+                                          onChange={(e) => setEditForm({
+                                            ...editForm,
+                                            tickets: {
+                                              ...editForm.tickets,
+                                              ordinary: { ...editForm.tickets.ordinary, price: parseFloat(e.target.value) || 0 }
+                                            }
+                                          })}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="border rounded-lg p-4">
+                                    <Label className="font-semibold">VIP</Label>
+                                    <div className="space-y-2 mt-2">
+                                      <div>
+                                        <Label htmlFor="edit-vip-available" className="text-sm">Available</Label>
+                                        <Input
+                                          id="edit-vip-available"
+                                          type="number"
+                                          min="0"
+                                          value={editForm.tickets.vip.available}
+                                          onChange={(e) => setEditForm({
+                                            ...editForm,
+                                            tickets: {
+                                              ...editForm.tickets,
+                                              vip: { ...editForm.tickets.vip, available: parseInt(e.target.value) || 0 }
+                                            }
+                                          })}
+                                          required
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label htmlFor="edit-vip-price" className="text-sm">Price ($)</Label>
+                                        <Input
+                                          id="edit-vip-price"
+                                          type="number"
+                                          min="0"
+                                          step="0.01"
+                                          value={editForm.tickets.vip.price}
+                                          onChange={(e) => setEditForm({
+                                            ...editForm,
+                                            tickets: {
+                                              ...editForm.tickets,
+                                              vip: { ...editForm.tickets.vip, price: parseFloat(e.target.value) || 0 }
+                                            }
+                                          })}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
                               <Button type="submit" disabled={loading} className="w-full">
                                 {loading ? 'Updating...' : 'Update Event'}
                               </Button>
